@@ -1,0 +1,226 @@
+---
+title: "Introduction to the ssr package"
+author: "Enrique Garcia-Ceja"
+output:
+  rmarkdown::html_vignette:
+    toc: true
+    toc_depth: 1
+
+vignette: >
+  %\VignetteIndexEntry{Introduction to the ssr package}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+
+This package implements the *self-learning* and *Co-training by Committee* semi-supervised regression algorithms from a set of *n* base regressor(s) specified by the user. When only one model is present in the list of regressors, self-learning is performed. The Co-training by Committee implementation is based on Hady et al. (2009). It consists of a set of *n* base models (the committee), each, initially trained with independent bootstrap samples from the labeled training set *L*. The Out-of-Bag (OOB) elements are used for validation. The training set for each base model *b* is augmented by selecting the most relevant elements from the unlabeled data set *U*. To determine the most relevant elements for each base model *b*, the other models (excluding *b*) label a set of data `pool.size` points sampled from *U* by taking the average of their predictions. For each newly labeled data point, the base model *b* is trained with its current labeled training data plus the new data point and the error on its OOB validation data is computed. The top `gr` points that reduce the error the most are kept and used to augment the labeled training set of *b* and removed from *U*.
+
+When the `regressors` list contains a single model, *self-learning* is performed. That is, the base model labels its own data points as opposed to *Co-training by Committee* in which the data points for a given model are labeled by the other models.
+
+In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The `ssr` function allows the user to specify any type of regressors as the base models. The regressors can be models from the **caret** package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named *data* that accepts a data frame as the training set. Secondly, the `predict()` function must have the trained model as its first parameter and a data frame as a second parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writting a wrapper function (See section 'Custom Functions').
+
+This document explains the following topics:
+
+* Fit semi-supervised regression models with the `ssr` function.
+* Plotting the results.
+* Defining the `regressors` and `regressors.params` lists.
+* Specify regressors from custom functions.
+* Training an Oracle model.
+
+# Fitting your first model with `ssr`
+
+Throughout this document we will be using the Friedman #1 dataset. An instance of this dataset is already included in the **ssr** package. The dataset has 10 input variables (X1..X10) and 1 response variable (Ytrue), all numeric. For more information about the dataset type `?friedman1`.
+
+```{r}
+library(ssr)
+
+dataset <- friedman1 # Load friedman1 dataset.
+
+head(dataset)
+
+set.seed(1234)
+
+# Split the dataset into 70% for training and 30% for testing.
+split1 <- split_train_test(dataset, pctTrain = 70)
+
+# Choose 5% of the train set as the labeled set L and the remaining will be the unlabeled set U.
+split2 <- split_train_test(split1$trainset, pctTrain = 5)
+
+L <- split2$trainset # This is the labeled dataset.
+
+U <- split2$testset[, -11] # Remove the labels since this is the unlabeled dataset.
+
+testset <- split1$testset # This is the test set.
+
+```
+
+Now lets define a *Co-training by Committee* model with a linear model and a KNN model as base regressors. Regressors are specified as a list with strings and/or functions. In this case, the first regressor is the linear model "lm" defined in the caret package and the second model is a KNN but this time specified directly as a function.  In this case, we are using *knnreg* also from the caret package but this could be from another package. For a list of available regressor models that can be passed as strings from the **caret** packge please see [here](https://topepo.github.io/caret/available-models.html).
+
+```{r message=FALSE, cache=F}
+# Define list of regressors.
+regressors <- list("lm", knn=caret::knnreg)
+
+# Fit the model and set maxits to 10.
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+```
+
+
+**NOTE:** If a regressor is specified as a function (*knnreg* in the above example), it has to be named. In this case, it was named *knn*. For regressors specified as strings, names are optional. In the above example, "lm" does not have a name.
+
+**ANOTHER NOTE:** When specifying a regressor as a function, that function must accept as its first parameter a formula and another parameter named *data* that takes a data frame. The parameter *data* can be at any position of the original function but formula must be the first one. Most functions in other packages follow this pattern. If you want to use a function on a package that does not follow this pattern, you can write a custom wrapper function (See section 'Custom Functions'). Additionally, the functions `predict()` method must accept a fitted model as its first argument and a data frame as the second argument.
+
+By default, `plotmetrics = FALSE` so no diagnostic plots are shown during training. To generate plots during training just set it to `TRUE`. Since the `verbose` parameter is `TRUE` by default, performance information is printed to the console including the initial Root Mean Squared Error (RMSE) and the RMSE during each iteration. The performance information is computed on the `testdata`, if provided. The initial RMSE is computed when the model is trained just on the labeled data **L** before using any data from the unlabeled set **U**. The improvement with repsect to the initial RMSE is also shown. The improvement is computed as:
+
+$$improvement = \frac{RMSE_0 - RMSE_i}{RMSE_0}$$
+
+where $RMSE_0$ is the initial RMSE and $RMSE_i$ is the RMSE of the current iteration.
+
+You can plot the performance across iterations with the `plot()` function and get the predictions on new data with the `predict()` function.
+
+```{r fig.height=5, fig.width=7}
+# Plot RMSE.
+plot(model)
+
+# Get the predictions on the testset.
+predictions <- predict(model, testset)
+
+# Calculate RMSE on the test set.
+rmse.result <- sqrt(mean((predictions - testset$Ytrue)^2))
+rmse.result
+```
+
+You can also inspect other performance metrics by specifying the `metric` parameter to one of: "rmse", "mae" or "cor". You can also plot the results of the individual regressors by setting `ptype = 2`.
+
+```{r fig.height=5, fig.width=7}
+plot(model, metric = "mae", ptype = 2)
+```
+
+# Specifying regressors' parameters with `regressors.params`
+
+You can specify individual parameters (such as *k* for knn) for each regressor via the`regressors.params` parameter. This parameter accepts a list of lists. Currently, it is not possible to specify parameters for caret models defined as strings but just for the ones specified as functions. If you do not want to specify parameters for a regressor use `NULL`.
+
+```{r fig.height=5, fig.width=7, message=FALSE, warning=FALSE, cache=F}
+
+# Prepare data.
+dataset <- friedman1
+set.seed(1234)
+split1 <- split_train_test(dataset, pctTrain = 70)
+split2 <- split_train_test(split1$trainset, pctTrain = 5)
+L <- split2$trainset
+U <- split2$testset[, -11]
+testset <- split1$testset
+
+# Define list of regressors.
+regressors <- list("lm", knn=caret::knnreg)
+
+# Specify their parameters. k = 7 for knnreg in this case.
+regressors.params <- list(NULL, list(k=7))
+
+model2 <- ssr("Ytrue ~ .", L, U,
+             regressors = regressors,
+             regressors.params = regressors.params,
+             maxits = 10,
+             testdata = testset)
+
+plot(model2)
+
+```
+
+# Custom Functions
+
+You can pass custom functions to the `regressors` parameter. For example if you have written your own regressor or want to write a wrapper around a function in another package that does not conform with the arguments pattern so you can do some pre-processing and accommodate for that.
+
+```{r fig.height=5, fig.width=7, message=FALSE, warning=FALSE, cache=F}
+
+# Define a custom function.
+myCustomModel <- function(theformula, data, myparam1){
+
+  # This is just a wrapper around knnreg but can be anything.
+  # Our custom function also accepts one parameter myparam1.
+  
+  # Now we train a knnreg and pass our custom parameter.
+  m <- caret::knnreg(theformula, data, k = myparam1)
+  
+  return(m)
+}
+
+# Prepare the data
+dataset <- friedman1
+set.seed(1234)
+split1 <- split_train_test(dataset, pctTrain = 70)
+split2 <- split_train_test(split1$trainset, pctTrain = 5)
+L <- split2$trainset
+U <- split2$testset[, -11]
+testset <- split1$testset
+
+# Specify our custom function as regressor.
+regressors <- list(myCustomModel)
+
+# Specify the list of parameters.
+regressors.params <- list(list(myparam1=7))
+
+# Fit the model.
+model3 <- ssr("Ytrue ~ .", L, U,
+             regressors = regressors,
+             regressors.params = regressors.params,
+             testdata = testset)
+
+```
+
+
+
+# Training an Oracle model
+
+Sometimes it is useful to compare your model against an 'Oracle'. In this context, an Oracle is a model that knows the true values of the unlabeled dataset *U*. This information is used when searching for the best candidates to augment the labeled set and once the best candidates are found, their true labels are used to train the models. This can be used to have an idea of the expected upper bound performance of the model. *This option should be used with caution* and not to be used to train a final model but just for comparison purposes. To train an Oracle model, just pass the true labels to the `U.y` parameter. When using this parameter, a warning will be printed.
+
+```{r fig.height=5, fig.width=7, message=FALSE, warning=TRUE, cache=F}
+
+# Prepare the data
+dataset <- friedman1
+set.seed(1234)
+split1 <- split_train_test(dataset, pctTrain = 70)
+split2 <- split_train_test(split1$trainset, pctTrain = 5)
+L <- split2$trainset
+U <- split2$testset[, -11]
+testset <- split1$testset
+
+# Get the true labels for the unlabeled set.
+U.y <- split2$testset[, 11]
+
+# Define list of regressors.
+regressors <- list("lm", knn=caret::knnreg)
+
+# Fit the model.
+model4 <- ssr("Ytrue ~ .", L, U,
+              regressors = regressors,
+              testdata = testset,
+              maxits = 10,
+              U.y = U.y)
+
+plot(model4)
+
+# Get the predictions on the testset.
+predictions <- predict(model4, testset)
+
+# Calculate RMSE on the test set.
+sqrt(mean((predictions - testset$Ytrue)^2))
+
+```
+
+In this case the RMSE on the test data was `r sqrt(mean((predictions - testset$Ytrue)^2))` which is lower than the rmse of our first model (`r rmse.result`).
+
+# References
+
+Hady, M. F. A., Schwenker, F., & Palm, G. (2009). *Semi-supervised Learning for Regression with Co-training by Committee.* In International Conference on Artificial Neural Networks (pp. 121-130). Springer, Berlin, Heidelberg.
+

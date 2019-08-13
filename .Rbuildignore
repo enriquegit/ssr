@@ -1,0 +1,9 @@
+^.*\.Rproj$
+^\.Rhistory$
+^\.cran-comments.md$
+^\.gitignore$
+^\.Rproj\.user$
+^userdev$
+^vignettesz$
+^data-raw$
+^revdep$
