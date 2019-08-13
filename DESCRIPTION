@@ -9,6 +9,8 @@ Description: An implementation of semi-supervised regression methods in R includ
 Depends: R (>= 3.6.0)
 License: GPL-3
 Encoding: UTF-8
+URL: https://github.com/enriquegit/ssr
+BugReports: https://github.com/enriquegit/ssr/issues
 LazyData: true
 Imports: 
     caret

@@ -18,7 +18,7 @@ You can install the development version from GitHub:
 
 ```{r}
 # install.packages("devtools")
-devtools::install_github("enriquegit/ssr", build_vignettes = TRUE)
+devtools::install_github("enriquegit/ssr", build_vignettes = FALSE)
 ```
 
 ## Example
