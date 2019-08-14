@@ -5,3 +5,5 @@ inst/doc
 /vignettes/ssr-package-vignette_cache/*
 vignettesz/*
 revdep
+.Rhistory[Conflict]
+DESCRIPTION[Conflict]

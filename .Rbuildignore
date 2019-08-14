@@ -1,9 +1,10 @@
 ^.*\.Rproj$
 ^\.Rhistory$
-^\.cran-comments.md$
+^cran-comments.md
 ^\.gitignore$
 ^\.Rproj\.user$
 ^userdev$
 ^vignettesz$
 ^data-raw$
 ^revdep$
+^\.travis\.yml$
