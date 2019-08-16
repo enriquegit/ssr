@@ -1,6 +1,6 @@
 # Script used to generate the friedman1 dataset using the tgp library.
 
-#library(tgp)
+library(tgp)
 
 set.seed(1234)
 

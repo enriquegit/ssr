@@ -27,6 +27,7 @@ This function generates performance plots to quickly inspect the results of the 
 The fitted model contains all the necessary data so the user can create custom plots, if required.
 }
 \examples{
+\dontrun{
 dataset <- friedman1 # Load dataset.
 
 set.seed(1234)
@@ -47,4 +48,5 @@ plot(model, metric = "rmse", ptype = 1)
 
 # Plot the MAE of each individual regressor.
 plot(model, metric = "MAE", ptype = 2)
+}
 }

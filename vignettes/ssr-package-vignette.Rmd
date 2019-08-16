@@ -71,7 +71,7 @@ Now lets define a *Co-training by Committee* model with a linear model and a KNN
 # Define list of regressors.
 regressors <- list("lm", knn=caret::knnreg)
 
-# Fit the model and set maxits to 10.
+# Fit the model and set maxits to 10. Depending on your system, this may take a couple of minutes.
 model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 ```
 
@@ -110,7 +110,7 @@ plot(model, metric = "mae", ptype = 2)
 
 You can specify individual parameters (such as *k* for knn) for each regressor via the`regressors.params` parameter. This parameter accepts a list of lists. Currently, it is not possible to specify parameters for caret models defined as strings but just for the ones specified as functions. If you do not want to specify parameters for a regressor use `NULL`.
 
-```{r fig.height=5, fig.width=7, message=FALSE, warning=FALSE, cache=F}
+```{r fig.height=5, fig.width=7, message=FALSE, warning=FALSE, cache=F, eval = FALSE}
 
 # Prepare data.
 dataset <- friedman1

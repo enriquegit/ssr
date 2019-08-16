@@ -91,6 +91,7 @@
 #' Hady, M. F. A., Schwenker, F., & Palm, G. (2009). Semi-supervised Learning for Regression with Co-training by Committee. In International Conference on Artificial Neural Networks (pp. 121-130). Springer, Berlin, Heidelberg.
 #'
 #' @examples
+#' \dontrun{
 #' dataset <- friedman1 # Load friedman1 dataset.
 #'
 #' set.seed(1234)
@@ -110,7 +111,7 @@
 #' # Define list of regressors.
 #' regressors <- list("lm", knn=caret::knnreg)
 #'
-#' # Fit the model.
+#' # Fit the model. Depending on your system, this may take a couple of minutes.
 #' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 #'
 #' # Plot RMSE.
@@ -121,7 +122,7 @@
 #'
 #' # Calculate RMSE on the test set.
 #' sqrt(mean((predictions - testset$Ytrue)^2))
-#'
+#' }
 #' @export
 ssr <- function(theFormula,
                     L,
@@ -511,7 +512,6 @@ selectRelevantExamples <- function(pos,
     delta_e <- c(delta_e, (e_1 - e) / e_1)
   } # end for
 
-  #idxs <- which(delta_e > 0 & delta_e > constants$minDelta)
   idxs <- which(delta_e > 0)
 
   if(length(idxs) == 0) return(NULL)
@@ -546,6 +546,7 @@ selectRelevantExamples <- function(pos,
 #' @return a NULL invisible object.
 #'
 #' @examples
+#' \dontrun{
 #' dataset <- friedman1 # Load dataset.
 #'
 #' set.seed(1234)
@@ -566,6 +567,7 @@ selectRelevantExamples <- function(pos,
 #'
 #' # Plot the MAE of each individual regressor.
 #' plot(model, metric = "MAE", ptype = 2)
+#' }
 #' @export
 #' @importFrom graphics abline legend lines par plot
 plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
@@ -591,7 +593,8 @@ plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
 
   ylimits <- c(min(values), max(values))
 
-  # Plot legend outside chart: http://dr-k-lo.blogspot.com/2014/03/the-simplest-way-to-plot-legend-outside.html
+  # Code to plot legend outside chart based on: http://dr-k-lo.blogspot.com/2014/03/the-simplest-way-to-plot-legend-outside.html
+  # "The simplest way to plot a legend outside a figure in R", Posted 20th March 2014 by Dr. K-Lo.
 
   # Set/Save plotting params
   old_pars <- par(oma = c(1, 0, 0, 0))
@@ -645,7 +648,6 @@ plotAllRegressors <- function(object, metric, ...){
   if(length(object$regressors.names) > 1){
     for(i in 2:length(object$regressors.names)){
       lines(0:object$numits, values[,i], col = i + 1)
-      #abline(h = values[1,i], lty = 2, col = i + 1)
     }
   }
 
@@ -721,8 +723,38 @@ predict_models <- function(models, newdata){
 #' @param ... additional arguments (not used)
 #' @return A numeric vector with the predictions for each row of the input data frame.
 #' @examples
+#' \dontrun{
+#' dataset <- friedman1 # Load friedman1 dataset.
 #'
-#' # See ?ssr for an example.
+#' set.seed(1234)
+#'
+#' # Split the dataset into 70% for training and 30% for testing.
+#' split1 <- split_train_test(dataset, pctTrain = 70)
+#'
+#' # Choose 5% of the train set as the labeled set L and the remaining will be the unlabeled set U.
+#' split2 <- split_train_test(split1$trainset, pctTrain = 5)
+#'
+#' L <- split2$trainset
+#'
+#' U <- split2$testset[, -11] # Remove the labels.
+#'
+#' testset <- split1$testset
+#'
+#' # Define list of regressors.
+#' regressors <- list("lm", knn=caret::knnreg)
+#'
+#' # Fit the model.
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+#'
+#' # Plot RMSE.
+#' plot(model)
+#'
+#' # Get the predictions on the testset.
+#' predictions <- predict(model, testset)
+#'
+#' # Calculate RMSE on the test set.
+#' sqrt(mean((predictions - testset$Ytrue)^2))
+#' }
 #'
 #' @export
 predict.ssr <- function(object, newdata, ...){

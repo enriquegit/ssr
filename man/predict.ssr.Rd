@@ -20,7 +20,37 @@ A numeric vector with the predictions for each row of the input data frame.
 Returns a vector of predicted responses from the fitted ssr object.
 }
 \examples{
+\dontrun{
+dataset <- friedman1 # Load friedman1 dataset.
 
-# See ?ssr for an example.
+set.seed(1234)
+
+# Split the dataset into 70\% for training and 30\% for testing.
+split1 <- split_train_test(dataset, pctTrain = 70)
+
+# Choose 5\% of the train set as the labeled set L and the remaining will be the unlabeled set U.
+split2 <- split_train_test(split1$trainset, pctTrain = 5)
+
+L <- split2$trainset
+
+U <- split2$testset[, -11] # Remove the labels.
+
+testset <- split1$testset
+
+# Define list of regressors.
+regressors <- list("lm", knn=caret::knnreg)
+
+# Fit the model.
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+
+# Plot RMSE.
+plot(model)
+
+# Get the predictions on the testset.
+predictions <- predict(model, testset)
+
+# Calculate RMSE on the test set.
+sqrt(mean((predictions - testset$Ytrue)^2))
+}
 
 }

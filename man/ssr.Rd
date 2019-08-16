@@ -114,6 +114,7 @@ When the \code{regressors} list contains a single model, \emph{self-learning} is
 In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The \code{ssr} function allows the user to specify any type of regressors as the base models. The regressors can be models from the \code{caret} package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named \code{data} that accepts a data frame as the training set. Secondly, the \code{predict()} function must have the trained model as its first parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writting a wrapper function. To see examples of all those cases, please check the Vignettes.
 }
 \examples{
+\dontrun{
 dataset <- friedman1 # Load friedman1 dataset.
 
 set.seed(1234)
@@ -133,7 +134,7 @@ testset <- split1$testset
 # Define list of regressors.
 regressors <- list("lm", knn=caret::knnreg)
 
-# Fit the model.
+# Fit the model. Depending on your system, this may take a couple of minutes.
 model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 
 # Plot RMSE.
@@ -144,7 +145,7 @@ predictions <- predict(model, testset)
 
 # Calculate RMSE on the test set.
 sqrt(mean((predictions - testset$Ytrue)^2))
-
+}
 }
 \references{
 Hady, M. F. A., Schwenker, F., & Palm, G. (2009). Semi-supervised Learning for Regression with Co-training by Committee. In International Conference on Artificial Neural Networks (pp. 121-130). Springer, Berlin, Heidelberg.
