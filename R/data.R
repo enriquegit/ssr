@@ -1,6 +1,6 @@
 #' friedman1 dataset.
 #'
-#' A dataset generated with \code{\link[tgp]{friedman.1.data}} from \code{tgp} package.
+#' A dataset generated with \code{\link[tgp]{friedman.1.data}} from 'tgp' package.
 #' The friedman1 data set is commonly used to test semi-supervised regression methods.
 #'
 #' @format A data frame with 1000 rows and 11 numeric variables. All variables were scaled to 0-1.

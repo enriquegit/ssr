@@ -10,7 +10,7 @@ X1 to X10 are the input variables and Ytrue is the output variable.}
 friedman1
 }
 \description{
-A dataset generated with \code{\link[tgp]{friedman.1.data}} from \code{tgp} package.
+A dataset generated with \code{\link[tgp]{friedman.1.data}} from 'tgp' package.
 The friedman1 data set is commonly used to test semi-supervised regression methods.
 }
 \keyword{datasets}

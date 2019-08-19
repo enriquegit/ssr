@@ -2,7 +2,7 @@
 % Please edit documentation in R/algorithms.R
 \name{plot.ssr}
 \alias{plot.ssr}
-\title{Plots a ssr Object}
+\title{Plots a ssr object}
 \usage{
 \method{plot}{ssr}(x, metric = "rmse", ptype = 1, ...)
 }
@@ -27,7 +27,6 @@ This function generates performance plots to quickly inspect the results of the 
 The fitted model contains all the necessary data so the user can create custom plots, if required.
 }
 \examples{
-\dontrun{
 dataset <- friedman1 # Load dataset.
 
 set.seed(1234)
@@ -38,15 +37,14 @@ split2 <- split_train_test(split1$trainset, pctTrain = 5)
 L <- split2$trainset
 U <- split2$testset[, -11]
 testset <- split1$testset
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(knn = caret::knnreg)
 
 # Fit the model.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, maxits = 10, testdata = testset)
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 
 # Plot the RMSE of the fitted model.
 plot(model, metric = "rmse", ptype = 1)
 
-# Plot the MAE of each individual regressor.
-plot(model, metric = "MAE", ptype = 2)
-}
+# Plot the MAE.
+plot(model, metric = "mae", ptype = 1)
 }

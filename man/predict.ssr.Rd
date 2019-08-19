@@ -2,7 +2,7 @@
 % Please edit documentation in R/algorithms.R
 \name{predict.ssr}
 \alias{predict.ssr}
-\title{Predictions From a Fitted ssr Object}
+\title{Predictions from a fitted ssr object}
 \usage{
 \method{predict}{ssr}(object, newdata, ...)
 }
@@ -20,7 +20,6 @@ A numeric vector with the predictions for each row of the input data frame.
 Returns a vector of predicted responses from the fitted ssr object.
 }
 \examples{
-\dontrun{
 dataset <- friedman1 # Load friedman1 dataset.
 
 set.seed(1234)
@@ -38,10 +37,10 @@ U <- split2$testset[, -11] # Remove the labels.
 testset <- split1$testset
 
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(knn = caret::knnreg)
 
 # Fit the model.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 
 # Plot RMSE.
 plot(model)
@@ -51,6 +50,4 @@ predictions <- predict(model, testset)
 
 # Calculate RMSE on the test set.
 sqrt(mean((predictions - testset$Ytrue)^2))
-}
-
 }

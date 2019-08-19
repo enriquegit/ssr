@@ -1,5 +1,5 @@
 
-#' Splits a data frame into Train and Test Sets.
+#' Splits a data frame into train and test sets.
 #'
 #' Utility function to randomly split a data frame into train and test sets.
 #'

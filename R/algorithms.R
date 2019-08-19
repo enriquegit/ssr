@@ -1,13 +1,13 @@
-#' Fits a Semi-supervised Regression Model
+#' Fits a semi-supervised regression model
 #'
-#' This function implements the \emph{Co-training by Committee} and \emph{self-learning} semi-supervised regression algorithms with a set of \emph{n} base regressor(s) specified by the user.
+#' This function implements the \emph{co-training by committee} and \emph{self-learning} semi-supervised regression algorithms with a set of \emph{n} base regressor(s) specified by the user.
 #' When only one model is present in the list of regressors, self-learning is performed.
 #'
-#' The Co-training by Committee implementation is based on Hady et al. (2009). It consists of a set of \emph{n} base models (the committee), each, initially trained with independent bootstrap samples from the labeled training set \code{L}. The Out-of-Bag (OOB) elements are used for validation. The training set for each base model \emph{b} is augmented by selecting the most relevant elements from the unlabeled data set \code{U}. To determine the most relevant elements for each base model \emph{b}, the other models (excluding \emph{b}) label a set of data \code{pool.size} points sampled from \code{U} by taking the average of their predictions. For each newly labeled data point, the base model \emph{b} is trained with its current labeled training data plus the new data point and the error on its OOB validation data is computed. The top \code{gr} points that reduce the error the most are kept and used to augment the labeled training set of \emph{b} and removed from \code{U}.
+#' The co-training by committee implementation is based on Hady et al. (2009). It consists of a set of \emph{n} base models (the committee), each, initially trained with independent bootstrap samples from the labeled training set \code{L}. The Out-of-Bag (OOB) elements are used for validation. The training set for each base model \emph{b} is augmented by selecting the most relevant elements from the unlabeled data set \code{U}. To determine the most relevant elements for each base model \emph{b}, the other models (excluding \emph{b}) label a set of data \code{pool.size} points sampled from \code{U} by taking the average of their predictions. For each newly labeled data point, the base model \emph{b} is trained with its current labeled training data plus the new data point and the error on its OOB validation data is computed. The top \code{gr} points that reduce the error the most are kept and used to augment the labeled training set of \emph{b} and removed from \code{U}.
 #'
-#' When the \code{regressors} list contains a single model, \emph{self-learning} is performed. In this case, the base model labels its own data points as opposed to Co-training by Committee in which the data points for a given model are labeled by the other models.
+#' When the \code{regressors} list contains a single model, \emph{self-learning} is performed. In this case, the base model labels its own data points as opposed to co-training by committee in which the data points for a given model are labeled by the other models.
 #'
-#' In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The \code{ssr} function allows the user to specify any type of regressors as the base models. The regressors can be models from the \code{caret} package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named \code{data} that accepts a data frame as the training set. Secondly, the \code{predict()} function must have the trained model as its first parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writing a wrapper function. To see examples of all those cases, please check the Vignettes.
+#' In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The \code{ssr} function allows the user to specify any type of regressors as the base models. The regressors can be models from the 'caret' package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named \code{data} that accepts a data frame as the training set. Secondly, the \code{predict()} function must have the trained model as its first parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writing a wrapper function. To see examples of all those cases, please check the vignettes.
 #'
 #' @param theFormula a \code{\link[stats]{formula}} that specifies the response and the predictor variables.
 #' Two formats are supported: \code{"Y ~ ."} and \code{"Y ~ var1 + var2 + ... + varn"}.
@@ -15,13 +15,13 @@
 #' @param U a data frame that contains the unlabeled data.
 #' If the provided data frame has the response variable as one of its columns, it will be discarded.
 #' @param regressors a list of custom functions and/or strings naming the regression models to be used.
-#' The strings must contain a valid name of a regression model from the \code{caret} package.
-#' The list of available regression models from the \code{caret} package can be found \href{https://topepo.github.io/caret/available-models.html}{here}.
+#' The strings must contain a valid name of a regression model from the 'caret' package.
+#' The list of available regression models from the 'caret' package can be found \href{https://topepo.github.io/caret/available-models.html}{here}.
 #' Functions must be named, e.g., \code{list(linearModel=lm)}. List names for models defined with strings are optional.
 #' A list can contain both, strings and functions: \code{list("kknn", linearModel=lm)}.
-#' Examples can be found in the Vignettes.
+#' Examples can be found in the vignettes.
 #' @param regressors.params a list of lists that specifies the parameters for each custom function.
-#' For \code{caret} models specified as strings in \code{regressors}, parameters cannot be passed, use \code{NULL} instead.
+#' For 'caret' models specified as strings in \code{regressors}, parameters cannot be passed, use \code{NULL} instead.
 #' The parameters are specified with a named list.
 #' For example, if \code{regressors = list("lm", knn=knnreg)}, the number of nearest neighbors for knn can be set with \code{list(NULL, list(k = 7))}.
 #' @param pool.size specifies the number of candidate elements to be sampled from the unlabeled set \code{U}.
@@ -91,7 +91,6 @@
 #' Hady, M. F. A., Schwenker, F., & Palm, G. (2009). Semi-supervised Learning for Regression with Co-training by Committee. In International Conference on Artificial Neural Networks (pp. 121-130). Springer, Berlin, Heidelberg.
 #'
 #' @examples
-#' \dontrun{
 #' dataset <- friedman1 # Load friedman1 dataset.
 #'
 #' set.seed(1234)
@@ -108,11 +107,12 @@
 #'
 #' testset <- split1$testset
 #'
-#' # Define list of regressors.
-#' regressors <- list("lm", knn=caret::knnreg)
+#' # Define list of regressors. Here, only one regressor (KNN). This trains a self-learning model.
+#' # For co-training by committee, add more regressors to the list. See the vignettes for examples.
+#' regressors <- list(knn = caret::knnreg)
 #'
-#' # Fit the model. Depending on your system, this may take a couple of minutes.
-#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+#' # Fit the model.
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 #'
 #' # Plot RMSE.
 #' plot(model)
@@ -122,7 +122,6 @@
 #'
 #' # Calculate RMSE on the test set.
 #' sqrt(mean((predictions - testset$Ytrue)^2))
-#' }
 #' @export
 ssr <- function(theFormula,
                     L,
@@ -530,7 +529,7 @@ selectRelevantExamples <- function(pos,
 
 }
 
-#' Plots a ssr Object
+#' Plots a ssr object
 #'
 #' Plots the results of a fitted ssr object if a testset was provided when fitting the model.
 #'
@@ -546,7 +545,6 @@ selectRelevantExamples <- function(pos,
 #' @return a NULL invisible object.
 #'
 #' @examples
-#' \dontrun{
 #' dataset <- friedman1 # Load dataset.
 #'
 #' set.seed(1234)
@@ -557,17 +555,16 @@ selectRelevantExamples <- function(pos,
 #' L <- split2$trainset
 #' U <- split2$testset[, -11]
 #' testset <- split1$testset
-#' regressors <- list("lm", knn=caret::knnreg)
+#' regressors <- list(knn = caret::knnreg)
 #'
 #' # Fit the model.
-#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, maxits = 10, testdata = testset)
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 #'
 #' # Plot the RMSE of the fitted model.
 #' plot(model, metric = "rmse", ptype = 1)
 #'
-#' # Plot the MAE of each individual regressor.
-#' plot(model, metric = "MAE", ptype = 2)
-#' }
+#' # Plot the MAE.
+#' plot(model, metric = "mae", ptype = 1)
 #' @export
 #' @importFrom graphics abline legend lines par plot
 plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
@@ -608,7 +605,7 @@ plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
   # Set/Save plotting params
   old_pars2 <- par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-  on.exit(par(old_pars2), add = TRUE, after = FALSE)
+  #on.exit(par(old_pars2), add = TRUE, after = FALSE)
 
   legend("bottom",
          legend = c("Iteration 0"),
@@ -658,7 +655,7 @@ plotAllRegressors <- function(object, metric, ...){
   # Set/Save plotting params
   old_pars2 <- par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-  on.exit(par(old_pars2), add = TRUE, after = FALSE)
+  #on.exit(par(old_pars2), add = TRUE, after = FALSE)
 
   legend("bottom",
          legend=object$regressors.names,
@@ -714,7 +711,7 @@ predict_models <- function(models, newdata){
   return(res)
 }
 
-#' Predictions From a Fitted ssr Object
+#' Predictions from a fitted ssr object
 #'
 #' Returns a vector of predicted responses from the fitted ssr object.
 #'
@@ -723,7 +720,6 @@ predict_models <- function(models, newdata){
 #' @param ... additional arguments (not used)
 #' @return A numeric vector with the predictions for each row of the input data frame.
 #' @examples
-#' \dontrun{
 #' dataset <- friedman1 # Load friedman1 dataset.
 #'
 #' set.seed(1234)
@@ -741,10 +737,10 @@ predict_models <- function(models, newdata){
 #' testset <- split1$testset
 #'
 #' # Define list of regressors.
-#' regressors <- list("lm", knn=caret::knnreg)
+#' regressors <- list(knn = caret::knnreg)
 #'
 #' # Fit the model.
-#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 #'
 #' # Plot RMSE.
 #' plot(model)
@@ -754,8 +750,6 @@ predict_models <- function(models, newdata){
 #'
 #' # Calculate RMSE on the test set.
 #' sqrt(mean((predictions - testset$Ytrue)^2))
-#' }
-#'
 #' @export
 predict.ssr <- function(object, newdata, ...){
 

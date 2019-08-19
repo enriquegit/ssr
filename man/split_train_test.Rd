@@ -2,7 +2,7 @@
 % Please edit documentation in R/utility_functions.R
 \name{split_train_test}
 \alias{split_train_test}
-\title{Splits a data frame into Train and Test Sets.}
+\title{Splits a data frame into train and test sets.}
 \usage{
 split_train_test(df, pctTrain)
 }

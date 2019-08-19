@@ -5,7 +5,7 @@ Version: 0.1.0
 Authors@R: c(person("Enrique", "Garcia-Ceja", role = c("aut", "cre"),
          email = "e.g.mx@ieee.org",
          comment = c(ORCID = "0000-0001-6864-8557")))
-Description: An implementation of semi-supervised regression methods in R including Co-Training by Committee and self-learning. Users can define which set of regressors to use as base models from the caret package, other packages, or custom functions.
+Description: An implementation of semi-supervised regression methods including self-learning and co-training by committee based on Hady, M. F. A., Schwenker, F., & Palm, G. (2009) <doi:10.1007/978-3-642-04274-4_13>. Users can define which set of regressors to use as base models from the 'caret' package, other packages, or custom functions.
 Depends: R (>= 3.6.0)
 License: GPL-3
 Encoding: UTF-8
