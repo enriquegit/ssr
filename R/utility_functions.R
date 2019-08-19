@@ -5,7 +5,7 @@
 #'
 #' @param df a data frame.
 #' @param pctTrain numeric value that specifies the percentage of rows to be included in the train set. The remaining rows are added to the test set.
-#' @return a list whith the first element being the train set and the second element the test set.
+#' @return a list with the first element being the train set and the second element the test set.
 #'
 #' @examples
 #' set.seed(1234)

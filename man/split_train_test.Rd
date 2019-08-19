@@ -12,7 +12,7 @@ split_train_test(df, pctTrain)
 \item{pctTrain}{numeric value that specifies the percentage of rows to be included in the train set. The remaining rows are added to the test set.}
 }
 \value{
-a list whith the first element being the train set and the second element the test set.
+a list with the first element being the train set and the second element the test set.
 }
 \description{
 Utility function to randomly split a data frame into train and test sets.

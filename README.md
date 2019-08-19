@@ -7,7 +7,7 @@
 
 An R package for **semi-supervised regression**.
 
-The **ssr** package implements *Co-training by Committee* and *self-learning* semi-supervised learning (SSL) algorithms for **regression**. In semi-supervised learning, alrgorithms learn model's parameters not only from labeled data but also from unlabeled data. In many applications, it is difficult, expensive, time-consuming, etc. to label data. Thus, semi-supervised methods learn by combining the limited labeled data points and the unlabeled data points.
+The **ssr** package implements *Co-training by Committee* and *self-learning* semi-supervised learning (SSL) algorithms for **regression**. In semi-supervised learning, algorithms learn model's parameters not only from labeled data but also from unlabeled data. In many applications, it is difficult, expensive, time-consuming, etc. to label data. Thus, semi-supervised methods learn by combining the limited labeled data points and the unlabeled data points.
 
 The **ssr** package provides the following functionalities:
 

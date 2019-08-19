@@ -7,12 +7,12 @@
 #'
 #' When the \code{regressors} list contains a single model, \emph{self-learning} is performed. In this case, the base model labels its own data points as opposed to Co-training by Committee in which the data points for a given model are labeled by the other models.
 #'
-#' In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The \code{ssr} function allows the user to specify any type of regressors as the base models. The regressors can be models from the \code{caret} package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named \code{data} that accepts a data frame as the training set. Secondly, the \code{predict()} function must have the trained model as its first parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writting a wrapper function. To see examples of all those cases, please check the Vignettes.
+#' In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The \code{ssr} function allows the user to specify any type of regressors as the base models. The regressors can be models from the \code{caret} package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named \code{data} that accepts a data frame as the training set. Secondly, the \code{predict()} function must have the trained model as its first parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writing a wrapper function. To see examples of all those cases, please check the Vignettes.
 #'
 #' @param theFormula a \code{\link[stats]{formula}} that specifies the response and the predictor variables.
 #' Two formats are supported: \code{"Y ~ ."} and \code{"Y ~ var1 + var2 + ... + varn"}.
 #' @param L a data frame that contains the initial labeled training set.
-#' @param U a data frame that contains the unlabaled data.
+#' @param U a data frame that contains the unlabeled data.
 #' If the provided data frame has the response variable as one of its columns, it will be discarded.
 #' @param regressors a list of custom functions and/or strings naming the regression models to be used.
 #' The strings must contain a valid name of a regression model from the \code{caret} package.
@@ -23,12 +23,12 @@
 #' @param regressors.params a list of lists that specifies the parameters for each custom function.
 #' For \code{caret} models specified as strings in \code{regressors}, parameters cannot be passed, use \code{NULL} instead.
 #' The parameters are specified with a named list.
-#' For example, if \code{regressors = list("lm", knn=knnreg)}, the number of nearest neighbours for knn can be set with \code{list(NULL, list(k = 7))}.
+#' For example, if \code{regressors = list("lm", knn=knnreg)}, the number of nearest neighbors for knn can be set with \code{list(NULL, list(k = 7))}.
 #' @param pool.size specifies the number of candidate elements to be sampled from the unlabeled set \code{U}.
 #' The best candidate elements from the pool are labeled and added to the training set.
 #' The \code{gr} parameter controls how many of the best candidates are used to augment the training set at each iteration.
 #' This parameter has big influence in computational time since in each iteration, \code{pool.size * length(regressors)} models are trained and evaluated in order to find the best candidate data points.
-#' @param gr an integer specifiying the \emph{growth rate}, ie., how many of the best elements from the pool are added to the training set for each base model at each iteration.
+#' @param gr an integer specifying the \emph{growth rate}, i.e., how many of the best elements from the pool are added to the training set for each base model at each iteration.
 #' @param maxits an integer that specifies the maximum number of iterations.
 #' The training phase will terminate either when \code{maxits} is reached or when \code{U} becomes empty.
 #' @param testdata a data frame containing the test set to be evaluated within each iteration.
@@ -43,7 +43,7 @@
 #' If this parameter is \code{!= NULL} then, the true values will be used to determine the best candidates to augment the training set
 #' and the true values will be kept when adding them to the training set.
 #' \emph{This parameter should be used with caution} and is intended to be used to generate an upper bound model for comparison purposes only.
-#' This is to simulate the case when the model can label the unlabaled data points used to augment the training set with 100\% accuracy.
+#' This is to simulate the case when the model can label the unlabeled data points used to augment the training set with 100\% accuracy.
 #' @return A list object of class "ssr" containing:
 #'
 #' \bold{models} A list of the final trained models in the last iteration.
@@ -719,7 +719,7 @@ predict_models <- function(models, newdata){
 #' Returns a vector of predicted responses from the fitted ssr object.
 #'
 #' @param object fitted object of class ssr.
-#' @param newdata data frame with the input variables from which the response varaible is to be predicted.
+#' @param newdata data frame with the input variables from which the response variable is to be predicted.
 #' @param ... additional arguments (not used)
 #' @return A numeric vector with the predictions for each row of the input data frame.
 #' @examples

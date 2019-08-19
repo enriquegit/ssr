@@ -9,7 +9,7 @@
 \arguments{
 \item{object}{fitted object of class ssr.}
 
-\item{newdata}{data frame with the input variables from which the response varaible is to be predicted.}
+\item{newdata}{data frame with the input variables from which the response variable is to be predicted.}
 
 \item{...}{additional arguments (not used)}
 }
