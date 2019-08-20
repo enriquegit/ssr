@@ -165,7 +165,7 @@ U <- split2$testset[, -11]
 testset <- split1$testset
 
 # Specify our custom function as regressor.
-regressors <- list(myCustomModel)
+regressors <- list(customModel = myCustomModel)
 
 # Specify the list of parameters.
 regressors.params <- list(list(myparam1=7))
@@ -224,3 +224,24 @@ In this case the RMSE on the test data was `r sqrt(mean((predictions - testset$Y
 
 Hady, M. F. A., Schwenker, F., & Palm, G. (2009). *Semi-supervised Learning for Regression with Co-training by Committee.* In International Conference on Artificial Neural Networks (pp. 121-130). Springer, Berlin, Heidelberg.
 
+
+## Citation
+
+To cite package **ssr** in publications use:
+
+```{r, eval = F}
+Enrique Garcia-Ceja (2019). ssr: Semi-Supervised Regression Methods.
+R package version 0.1.0. https://CRAN.R-project.org/package=ssr
+```
+
+BibTex entry for LaTeX:
+
+```{r, eval = F}
+@Manual{enriqueSSR,
+    title = {ssr: Semi-Supervised Regression Methods},
+    author = {Enrique Garcia-Ceja},
+    year = {2019},
+    note = {R package version 0.1.0},
+    url = {https://CRAN.R-project.org/package=ssr},
+  }
+```
