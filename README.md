@@ -1,6 +1,7 @@
 # ssr <img src="man/figures/ssrlogo.png" align="right" width="100px " alt=""/>
 
 <!-- badges: start -->
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/ssr)](https://cran.r-project.org/package=ssr)
 [![Travis build status](https://travis-ci.org/enriquegit/ssr.svg?branch=master)](https://travis-ci.org/enriquegit/ssr)
 <!-- badges: end -->
 
@@ -19,7 +20,13 @@ The **ssr** package provides the following functionalities:
 
 ## Installation
 
-You can install the development version from GitHub. Building the vignettes can take a couple of minutes so you may want to set `build_vignettes = FALSE`.
+You can install the **ssr** package from CRAN:
+
+```{r}
+install.packages("ssr")
+```
+
+or you can install the development version from GitHub. Building the vignettes can take a couple of minutes so you may want to set `build_vignettes = FALSE`.
 
 ```{r}
 # install.packages("devtools")
@@ -61,5 +68,25 @@ sqrt(mean((predictions - testset$Ytrue)^2))
 
 ```
 
-For detailed explanations and more examples refer to the package vignettes.
+*For detailed explanations and more examples refer to the package* [vignettes](https://cran.r-project.org/web/packages/ssr/vignettes/ssr-package-vignette.html).
 
+## Citation
+
+To cite package **ssr** in publications use:
+
+```{r}
+Enrique Garcia-Ceja (2019). ssr: Semi-Supervised Regression Methods.
+R package version 0.1.0. https://CRAN.R-project.org/package=ssr
+```
+
+BibTex entry for LaTeX:
+
+```{r}
+@Manual{enriqueSSR,
+    title = {ssr: Semi-Supervised Regression Methods},
+    author = {Enrique Garcia-Ceja},
+    year = {2019},
+    note = {R package version 0.1.0},
+    url = {https://CRAN.R-project.org/package=ssr},
+  }
+```
