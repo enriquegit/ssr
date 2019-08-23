@@ -605,7 +605,7 @@ plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
   # Set/Save plotting params
   old_pars2 <- par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-  #on.exit(par(old_pars2), add = TRUE, after = FALSE)
+  on.exit(par(old_pars2), add = TRUE, after = FALSE)
 
   legend("bottom",
          legend = c("Iteration 0"),
@@ -655,7 +655,7 @@ plotAllRegressors <- function(object, metric, ...){
   # Set/Save plotting params
   old_pars2 <- par(fig = c(0, 1, 0, 1), oma = c(0, 0, 0, 0), mar = c(0, 0, 0, 0), new = TRUE)
   plot(0, 0, type = "n", bty = "n", xaxt = "n", yaxt = "n")
-  #on.exit(par(old_pars2), add = TRUE, after = FALSE)
+  on.exit(par(old_pars2), add = TRUE, after = FALSE)
 
   legend("bottom",
          legend=object$regressors.names,
