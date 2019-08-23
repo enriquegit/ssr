@@ -375,17 +375,17 @@ ssr <- function(theFormula,
     if(is.null(testdata)==F){
       res <- predict_models(models, testdata)
 
-      rmse.m <- sqrt(mean((res$preds - testdata[,ncol(testdata)])^2))
+      rmse.m <- sqrt(mean((res$preds - testdata[, yvar])^2))
       valuesRMSE <- c(valuesRMSE, rmse.m)
       rmse.all <- computeRMSE(res$all, testdata, yvar)
       valuesRMSE.all <- rbind(valuesRMSE.all, rmse.all)
 
-      mae.m <- mean(abs(res$preds - testdata[,ncol(testdata)]))
+      mae.m <- mean(abs(res$preds - testdata[, yvar]))
       valuesMAE <- c(valuesMAE, mae.m)
       mae.all <- computeMAE(res$all, testdata, yvar)
       valuesMAE.all <- rbind(valuesMAE.all, mae.all)
 
-      cor.m <- cor(res$preds, testdata[,ncol(testdata)])
+      cor.m <- cor(res$preds, testdata[, yvar])
       valuesCOR <- c(valuesCOR, cor.m)
       cor.all <- computeCOR(res$all, testdata, yvar)
       valuesCOR.all <- rbind(valuesCOR.all, cor.all)
