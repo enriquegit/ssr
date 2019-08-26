@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{a fitted object of class "ssr".}
 
-\item{metric}{the type of metric to be plotted ("rmse", "mae", "cor"), defaults to "rmse".}
+\item{metric}{the type of metric to be plotted ("rmse", "mae", "cor"), defaults to "rmse". "cor" is for pearson correlation.}
 
 \item{ptype}{an integer specifying the type of plot. The default 1, plots the performance metric of the fitted model.
 Any value different of 1, plots the performance metric of the individual regressors used to build the model.}
@@ -37,14 +37,11 @@ split2 <- split_train_test(split1$trainset, pctTrain = 5)
 L <- split2$trainset
 U <- split2$testset[, -11]
 testset <- split1$testset
-regressors <- list(knn = caret::knnreg)
-
-# Fit the model.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
+model <- ssr("Ytrue ~ .", L, U, testdata = testset)
 
 # Plot the RMSE of the fitted model.
 plot(model, metric = "rmse", ptype = 1)
 
-# Plot the MAE.
-plot(model, metric = "mae", ptype = 1)
+# Plot the MAE of all models.
+plot(model, metric = "mae", ptype = 2)
 }

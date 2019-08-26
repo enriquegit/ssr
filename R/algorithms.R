@@ -19,6 +19,7 @@
 #' The list of available regression models from the 'caret' package can be found \href{https://topepo.github.io/caret/available-models.html}{here}.
 #' Functions must be named, e.g., \code{list(linearModel=lm)}. List names for models defined with strings are optional.
 #' A list can contain both, strings and functions: \code{list("kknn", linearModel=lm)}.
+#' For better performance in time, it is recommended to pass functions directly rather than using 'caret' strings since 'caret' does additional preprocessing when training models.
 #' Examples can be found in the vignettes.
 #' @param regressors.params a list of lists that specifies the parameters for each custom function.
 #' For 'caret' models specified as strings in \code{regressors}, parameters cannot be passed, use \code{NULL} instead.
@@ -107,12 +108,9 @@
 #'
 #' testset <- split1$testset
 #'
-#' # Define list of regressors. Here, only one regressor (KNN). This trains a self-learning model.
-#' # For co-training by committee, add more regressors to the list. See the vignettes for examples.
-#' regressors <- list(knn = caret::knnreg)
-#'
-#' # Fit the model.
-#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
+#' # Fit the model. By default, a linear model (lm) and knn are used.
+#' # See the vignettes for examples on how to define the list of regressors.
+#' model <- ssr("Ytrue ~ .", L, U, testdata = testset)
 #'
 #' # Plot RMSE.
 #' plot(model)
@@ -126,9 +124,9 @@
 ssr <- function(theFormula,
                     L,
                     U,
-                    regressors = list("lm", "rvmLinear"),
+                    regressors = list(lm=lm, knn=caret::knnreg),
                     regressors.params = NULL,
-                    pool.size=10,
+                    pool.size=20,
                     gr=1,
                     maxits=20,
                     testdata=NULL,
@@ -252,7 +250,8 @@ ssr <- function(theFormula,
     OOB <- c(OOB, list(L[iOOB,])) # Populate OOB with the out-of-bag elements.
 
     if (regressors.types[i] == "character") {
-      m <- caret::train(theFormula, data = B[[i]], method = regressors.names[i]) # Train the regressor using B.
+      m <- caret::train(theFormula, data = B[[i]], method = regressors.names[i],
+                        trControl = caret::trainControl(method = "none")) # Train the regressor using B.
     }
     else {
       if(is.null(regressors.params[[i]])){
@@ -357,7 +356,8 @@ ssr <- function(theFormula,
       B[[i]] <- tmp
 
       if (regressors.types[i] == "character") {
-        m <- caret::train(theFormula, data = B[[i]], models[[i]]$method)
+        m <- caret::train(theFormula, data = B[[i]], models[[i]]$method,
+                          trControl = caret::trainControl(method = "none"))
       }
       else {
         if(is.null(regressors.params[[i]])){
@@ -493,7 +493,8 @@ selectRelevantExamples <- function(pos,
     if(shuffle) tmp <- shuffleRows(tmp)
 
     if (regressors.types[pos] == "character") {
-      tmp.m <- caret::train(theFormula, data = tmp, method = m$method)
+      tmp.m <- caret::train(theFormula, data = tmp, method = m$method,
+                            trControl = caret::trainControl(method = "none"))
     }
     else {
       if(is.null(regressors.params[[pos]])){
@@ -537,7 +538,7 @@ selectRelevantExamples <- function(pos,
 #' The fitted model contains all the necessary data so the user can create custom plots, if required.
 #'
 #' @param x a fitted object of class "ssr".
-#' @param metric the type of metric to be plotted ("rmse", "mae", "cor"), defaults to "rmse".
+#' @param metric the type of metric to be plotted ("rmse", "mae", "cor"), defaults to "rmse". "cor" is for pearson correlation.
 #' @param ptype an integer specifying the type of plot. The default 1, plots the performance metric of the fitted model.
 #' Any value different of 1, plots the performance metric of the individual regressors used to build the model.
 #' @param ... additional arguments to be passed to the plot function.
@@ -555,16 +556,13 @@ selectRelevantExamples <- function(pos,
 #' L <- split2$trainset
 #' U <- split2$testset[, -11]
 #' testset <- split1$testset
-#' regressors <- list(knn = caret::knnreg)
-#'
-#' # Fit the model.
-#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
+#' model <- ssr("Ytrue ~ .", L, U, testdata = testset)
 #'
 #' # Plot the RMSE of the fitted model.
 #' plot(model, metric = "rmse", ptype = 1)
 #'
-#' # Plot the MAE.
-#' plot(model, metric = "mae", ptype = 1)
+#' # Plot the MAE of all models.
+#' plot(model, metric = "mae", ptype = 2)
 #' @export
 #' @importFrom graphics abline legend lines par plot
 plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
@@ -736,11 +734,7 @@ predict_models <- function(models, newdata){
 #'
 #' testset <- split1$testset
 #'
-#' # Define list of regressors.
-#' regressors <- list(knn = caret::knnreg)
-#'
-#' # Fit the model.
-#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
+#' model <- ssr("Ytrue ~ .", L, U, testdata = testset)
 #'
 #' # Plot RMSE.
 #' plot(model)

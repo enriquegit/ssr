@@ -4,8 +4,8 @@
 \alias{ssr}
 \title{Fits a semi-supervised regression model}
 \usage{
-ssr(theFormula, L, U, regressors = list("lm", "rvmLinear"),
-  regressors.params = NULL, pool.size = 10, gr = 1, maxits = 20,
+ssr(theFormula, L, U, regressors = list(lm = lm, knn = caret::knnreg),
+  regressors.params = NULL, pool.size = 20, gr = 1, maxits = 20,
   testdata = NULL, shuffle = TRUE, verbose = TRUE,
   plotmetrics = FALSE, U.y = NULL)
 }
@@ -23,6 +23,7 @@ The strings must contain a valid name of a regression model from the 'caret' pac
 The list of available regression models from the 'caret' package can be found \href{https://topepo.github.io/caret/available-models.html}{here}.
 Functions must be named, e.g., \code{list(linearModel=lm)}. List names for models defined with strings are optional.
 A list can contain both, strings and functions: \code{list("kknn", linearModel=lm)}.
+For better performance in time, it is recommended to pass functions directly rather than using 'caret' strings since 'caret' does additional preprocessing when training models.
 Examples can be found in the vignettes.}
 
 \item{regressors.params}{a list of lists that specifies the parameters for each custom function.
@@ -130,12 +131,9 @@ U <- split2$testset[, -11] # Remove the labels.
 
 testset <- split1$testset
 
-# Define list of regressors. Here, only one regressor (KNN). This trains a self-learning model.
-# For co-training by committee, add more regressors to the list. See the vignettes for examples.
-regressors <- list(knn = caret::knnreg)
-
-# Fit the model.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
+# Fit the model. By default, a linear model (lm) and knn are used.
+# See the vignettes for examples on how to define the list of regressors.
+model <- ssr("Ytrue ~ .", L, U, testdata = testset)
 
 # Plot RMSE.
 plot(model)

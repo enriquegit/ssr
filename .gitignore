@@ -8,3 +8,4 @@ revdep
 .Rhistory[Conflict]
 DESCRIPTION[Conflict]
 CRAN-RELEASE
+cran-comments.md

@@ -24,9 +24,9 @@ knitr::opts_chunk$set(
 # Introduction
 
 
-This package implements the *self-learning* and *Co-training by Committee* semi-supervised regression algorithms from a set of *n* base regressor(s) specified by the user. When only one model is present in the list of regressors, self-learning is performed. The Co-training by Committee implementation is based on Hady et al. (2009). It consists of a set of *n* base models (the committee), each, initially trained with independent bootstrap samples from the labeled training set *L*. The Out-of-Bag (OOB) elements are used for validation. The training set for each base model *b* is augmented by selecting the most relevant elements from the unlabeled data set *U*. To determine the most relevant elements for each base model *b*, the other models (excluding *b*) label a set of data `pool.size` points sampled from *U* by taking the average of their predictions. For each newly labeled data point, the base model *b* is trained with its current labeled training data plus the new data point and the error on its OOB validation data is computed. The top `gr` points that reduce the error the most are kept and used to augment the labeled training set of *b* and removed from *U*.
+This package implements the *self-learning* and *co-training by committee* semi-supervised regression algorithms from a set of *n* base regressor(s) specified by the user. When only one model is present in the list of regressors, self-learning is performed. The co-training by committee implementation is based on Hady et al. (2009). It consists of a set of *n* base models (the committee), each, initially trained with independent bootstrap samples from the labeled training set *L*. The Out-of-Bag (OOB) elements are used for validation. The training set for each base model *b* is augmented by selecting the most relevant elements from the unlabeled data set *U*. To determine the most relevant elements for each base model *b*, the other models (excluding *b*) label a set of data `pool.size` points sampled from *U* by taking the average of their predictions. For each newly labeled data point, the base model *b* is trained with its current labeled training data plus the new data point and the error on its OOB validation data is computed. The top `gr` points that reduce the error the most are kept and used to augment the labeled training set of *b* and removed from *U*.
 
-When the `regressors` list contains a single model, *self-learning* is performed. That is, the base model labels its own data points as opposed to *Co-training by Committee* in which the data points for a given model are labeled by the other models.
+When the `regressors` list contains a single model, *self-learning* is performed. That is, the base model labels its own data points as opposed to *co-training by committee* in which the data points for a given model are labeled by the other models.
 
 In the original paper, Hady et al. (2009) use the same type of regressor for the base models but with different parameters to introduce diversity. The `ssr` function allows the user to specify any type of regressors as the base models. The regressors can be models from the **caret** package, other packages, or custom functions. Models from other packages or custom functions need to comply with certain structure. First, the model's function used for training must have a formula as its first parameter and a parameter named *data* that accepts a data frame as the training set. Secondly, the `predict()` function must have the trained model as its first parameter and a data frame as a second parameter. Most of the models from other libraries follow this pattern. If they do not follow this pattern, you can still use them by writing a wrapper function (See section 'Custom Functions').
 
@@ -65,18 +65,31 @@ testset <- split1$testset # This is the test set.
 
 ```
 
-Now lets define a *Co-training by Committee* model with a linear model and a KNN model as base regressors. Regressors are specified as a list with strings and/or functions. In this case, the first regressor is the linear model "lm" defined in the caret package and the second model is a KNN but this time specified directly as a function.  In this case, we are using *knnreg* also from the caret package but this could be from another package. For a list of available regressor models that can be passed as strings from the **caret** package please see [here](https://topepo.github.io/caret/available-models.html).
+Now lets define a *co-training by committee* model with a linear model, a KNN and a SVM as base regressors. Regressors are specified as a list with strings and/or functions. In this case, the first regressor is the linear model lm, the second model is a KNN, and the third one is a support vector machine from the e1071 package. In this case, we are using *knnreg* from the caret package but this could be from another package.
 
 ```{r message=FALSE, cache=F}
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(linearRegression=lm, knn=caret::knnreg, svm=e1071::svm)
 
-# Fit the model and set maxits to 10. Depending on your system, this may take a couple of minutes.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+# Fit the model.
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 ```
 
+Regressors can also be specified by strings from the caret package:
 
-**NOTE:** If a regressor is specified as a function (*knnreg* in the above example), it has to be named. In this case, it was named *knn*. For regressors specified as strings, names are optional. In the above example, "lm" does not have a name.
+```{r message=FALSE, eval = F}
+regressors <- list("lm", "rvmLinear")
+```
+
+or combinations between strings and functions:
+
+```{r message=FALSE, eval = F}
+regressors <- list("lm", knn=caret::knnreg)
+```
+
+For a list of available regressor models that can be passed as strings from the **caret** package please see [here](https://topepo.github.io/caret/available-models.html). For better performance in time, it is recommended to pass functions directly rather than using 'caret' strings since 'caret' does additional preprocessing when training models and this increases training times significantly.
+
+**NOTE:** If a regressor is specified as a function (*knnreg* in the above example), it has to be named. In this case, it was named *knn*. For regressors specified as strings, names are optional. In the above example, "lm" does not have a name. This is to ensure that the name of the regressor is plotted.
 
 **ANOTHER NOTE:** When specifying a regressor as a function, that function must accept as its first parameter a formula and another parameter named *data* that takes a data frame. The parameter *data* can be at any position of the original function but formula must be the first one. Most functions in other packages follow this pattern. If you want to use a function on a package that does not follow this pattern, you can write a custom wrapper function (See section 'Custom Functions'). Additionally, the functions `predict()` method must accept a fitted model as its first argument and a data frame as the second argument.
 
@@ -122,7 +135,7 @@ U <- split2$testset[, -11]
 testset <- split1$testset
 
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(linearRegression=lm, knn=caret::knnreg)
 
 # Specify their parameters. k = 7 for knnreg in this case.
 regressors.params <- list(NULL, list(k=7))
@@ -130,7 +143,6 @@ regressors.params <- list(NULL, list(k=7))
 model2 <- ssr("Ytrue ~ .", L, U,
              regressors = regressors,
              regressors.params = regressors.params,
-             maxits = 10,
              testdata = testset)
 
 plot(model2)
@@ -199,13 +211,12 @@ testset <- split1$testset
 U.y <- split2$testset[, 11]
 
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(linearRegression=lm, knn=caret::knnreg, svm=e1071::svm)
 
 # Fit the model.
 model4 <- ssr("Ytrue ~ .", L, U,
               regressors = regressors,
               testdata = testset,
-              maxits = 10,
               U.y = U.y)
 
 plot(model4)
