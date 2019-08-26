@@ -131,9 +131,12 @@ U <- split2$testset[, -11] # Remove the labels.
 
 testset <- split1$testset
 
-# Fit the model. By default, a linear model (lm) and knn are used.
-# See the vignettes for examples on how to define the list of regressors.
-model <- ssr("Ytrue ~ .", L, U, testdata = testset)
+# Define list of regressors. Here, only one regressor (KNN). This trains a self-learning model.
+# For co-training by committee, add more regressors to the list. See the vignettes for examples.
+regressors <- list(knn = caret::knnreg)
+
+# Fit the model.
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 
 # Plot RMSE.
 plot(model)

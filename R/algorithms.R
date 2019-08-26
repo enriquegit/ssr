@@ -108,9 +108,12 @@
 #'
 #' testset <- split1$testset
 #'
-#' # Fit the model. By default, a linear model (lm) and knn are used.
-#' # See the vignettes for examples on how to define the list of regressors.
-#' model <- ssr("Ytrue ~ .", L, U, testdata = testset)
+#' # Define list of regressors. Here, only one regressor (KNN). This trains a self-learning model.
+#' # For co-training by committee, add more regressors to the list. See the vignettes for examples.
+#' regressors <- list(knn = caret::knnreg)
+#'
+#' # Fit the model.
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 #'
 #' # Plot RMSE.
 #' plot(model)
@@ -556,13 +559,14 @@ selectRelevantExamples <- function(pos,
 #' L <- split2$trainset
 #' U <- split2$testset[, -11]
 #' testset <- split1$testset
-#' model <- ssr("Ytrue ~ .", L, U, testdata = testset)
+#' regressors <- list(knn = caret::knnreg)
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 #'
 #' # Plot the RMSE of the fitted model.
 #' plot(model, metric = "rmse", ptype = 1)
 #'
-#' # Plot the MAE of all models.
-#' plot(model, metric = "mae", ptype = 2)
+#' # Plot the MAE.
+#' plot(model, metric = "mae", ptype = 1)
 #' @export
 #' @importFrom graphics abline legend lines par plot
 plot.ssr <- function(x, metric = "rmse", ptype = 1, ...){
@@ -734,7 +738,9 @@ predict_models <- function(models, newdata){
 #'
 #' testset <- split1$testset
 #'
-#' model <- ssr("Ytrue ~ .", L, U, testdata = testset)
+#' regressors <- list(knn = caret::knnreg)
+#'
+#' model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 #'
 #' # Plot RMSE.
 #' plot(model)

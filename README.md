@@ -26,11 +26,11 @@ You can install the **ssr** package from CRAN:
 install.packages("ssr")
 ```
 
-or you can install the development version from GitHub. Building the vignettes can take a couple of minutes so you may want to set `build_vignettes = FALSE`.
+or you can install the development version from GitHub.
 
 ```{r}
 # install.packages("devtools")
-devtools::install_github("enriquegit/ssr", build_vignettes = FALSE)
+devtools::install_github("enriquegit/ssr")
 ```
 
 ## Example
@@ -52,10 +52,10 @@ U <- split2$testset[, -11] # Remove the labels.
 testset <- split1$testset
 
 # Define list of regressors.
-regressors <- list("lm", knn=caret::knnreg)
+regressors <- list(linearRegression=lm, knn=caret::knnreg)
 
 # Fit the model.
-model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset)
 
 # Plot RMSE.
 plot(model)

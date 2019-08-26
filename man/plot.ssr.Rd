@@ -37,11 +37,12 @@ split2 <- split_train_test(split1$trainset, pctTrain = 5)
 L <- split2$trainset
 U <- split2$testset[, -11]
 testset <- split1$testset
-model <- ssr("Ytrue ~ .", L, U, testdata = testset)
+regressors <- list(knn = caret::knnreg)
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 
 # Plot the RMSE of the fitted model.
 plot(model, metric = "rmse", ptype = 1)
 
-# Plot the MAE of all models.
-plot(model, metric = "mae", ptype = 2)
+# Plot the MAE.
+plot(model, metric = "mae", ptype = 1)
 }

@@ -36,7 +36,9 @@ U <- split2$testset[, -11] # Remove the labels.
 
 testset <- split1$testset
 
-model <- ssr("Ytrue ~ .", L, U, testdata = testset)
+regressors <- list(knn = caret::knnreg)
+
+model <- ssr("Ytrue ~ .", L, U, regressors = regressors, testdata = testset, maxits = 10)
 
 # Plot RMSE.
 plot(model)
