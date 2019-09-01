@@ -76,7 +76,7 @@ To cite package **ssr** in publications use:
 
 ```{r}
 Enrique Garcia-Ceja (2019). ssr: Semi-Supervised Regression Methods.
-R package version 0.1.0. https://CRAN.R-project.org/package=ssr
+R package https://CRAN.R-project.org/package=ssr
 ```
 
 BibTex entry for LaTeX:
@@ -86,7 +86,7 @@ BibTex entry for LaTeX:
     title = {ssr: Semi-Supervised Regression Methods},
     author = {Enrique Garcia-Ceja},
     year = {2019},
-    note = {R package version 0.1.0},
+    note = {R package},
     url = {https://CRAN.R-project.org/package=ssr},
   }
 ```
