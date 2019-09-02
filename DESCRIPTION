@@ -1,7 +1,7 @@
 Package: ssr
 Type: Package
 Title: Semi-Supervised Regression Methods
-Version: 0.1.1.9000
+Version: 0.1.1
 Authors@R: c(person("Enrique", "Garcia-Ceja", role = c("aut", "cre"),
          email = "e.g.mx@ieee.org",
          comment = c(ORCID = "0000-0001-6864-8557")))
