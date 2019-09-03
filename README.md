@@ -68,7 +68,7 @@ sqrt(mean((predictions - testset$Ytrue)^2))
 
 ```
 
-*For detailed explanations and more examples refer to the package* [vignettes](https://cran.r-project.org/web/packages/ssr/vignettes/ssr-package-vignette.html).
+*For detailed explanations and more examples refer to the package* [vignettes](https://CRAN.R-project.org/package=ssr/vignettes/ssr-package-vignette.html).
 
 ## Citation
 
