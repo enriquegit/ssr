@@ -3,6 +3,7 @@
 <!-- badges: start -->
 [![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/ssr)](https://cran.r-project.org/package=ssr)
 [![Travis build status](https://travis-ci.org/enriquegit/ssr.svg?branch=master)](https://travis-ci.org/enriquegit/ssr)
+[![](http://cranlogs.r-pkg.org/badges/grand-total/ssr?color=blue)](https://cran.r-project.org/package=ssr)
 <!-- badges: end -->
 
 
